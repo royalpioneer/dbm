@@ -56,34 +56,15 @@
   import type { BizItem } from '@services/types';
 
   interface Props {
-    isShow: boolean;
     biz: BizItem | undefined;
   }
 
-  interface Emits {
-    (e: 'update:isShow', value: boolean): void;
-  }
-
   const props = defineProps<Props>();
-  const emits = defineEmits<Emits>();
+  const isShow = defineModel<boolean>('isShow');
 
   const { t } = useI18n();
   const formRef = useTemplateRef<InstanceType<typeof Form>>('formRef');
   const inputRef = useTemplateRef<HTMLInputElement>('inputRef');
-  const { loading: validateLoading, run: runValidate } = useRequest(validateTag, {
-    manual: true,
-    onSuccess(data) {
-      const { duplicated_values } = data;
-      existedTagsSet.value = new Set(duplicated_values);
-      formRef.value?.validate();
-    },
-  });
-  const { loading: createLoading, run: runCreate } = useRequest(createTag, {
-    manual: true,
-    onSuccess() {
-      handleClose();
-    },
-  });
 
   const existedTagsSet = ref<Set<string>>(new Set());
   const formModel = reactive<{
@@ -102,9 +83,23 @@
     ];
   });
 
+  const { loading: validateLoading, run: runValidate } = useRequest(validateTag, {
+    manual: true,
+    onSuccess(data) {
+      existedTagsSet.value = new Set(data.duplicated_values);
+      formRef.value?.validate();
+    },
+  });
+  const { loading: createLoading, run: runCreate } = useRequest(createTag, {
+    manual: true,
+    onSuccess() {
+      handleClose();
+    },
+  });
+
   watch(
     () => formModel.tags,
-    async (tags) => {
+    (tags) => {
       runValidate({
         bk_biz_id: props.biz?.bk_biz_id as number,
         values: tags,
@@ -132,7 +127,7 @@
     };
   };
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     runCreate({
       bk_biz_id: props.biz?.bk_biz_id as number,
       type: 'system',
@@ -142,7 +137,7 @@
   };
 
   const handleClose = () => {
-    emits('update:isShow', false);
+    isShow.value = false;
   };
 
   onMounted(() => {

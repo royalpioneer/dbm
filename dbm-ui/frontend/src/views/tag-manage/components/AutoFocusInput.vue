@@ -35,7 +35,7 @@
 
   const emits = defineEmits<Emits>();
 
-  const modelValue = defineModel<string>('modelValue', {
+  const modelValue = defineModel({
     default: '',
   });
 

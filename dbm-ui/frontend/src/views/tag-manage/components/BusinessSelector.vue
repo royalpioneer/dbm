@@ -81,8 +81,8 @@
     });
   });
 
-  watch(selected, (newValue) => {
-    emits('change', newValue as number);
+  watch(selected, () => {
+    emits('change', selected.value as number);
   });
 
   const handleFavor = (bkBizId: number) => {

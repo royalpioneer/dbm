@@ -103,6 +103,18 @@
   const { bizIdMap, currentBizInfo } = useGlobalBizs();
   const route = useRoute();
   const router = useRouter();
+
+  const tableRef = ref();
+  const selected = ref<ResourceTagModel[]>([]);
+  const isCreateTagDialogShow = ref(false);
+  const curBiz = ref(currentBizInfo);
+  const curEditId = ref(-1);
+  const searchValue = ref([]);
+
+  const hasSelected = computed(() => selected.value.length > 0);
+  const selectedIds = computed(() => selected.value.map(item => item.id));
+  const isBusiness = computed(() => route.name === 'BizResourceTag');
+
   const { run: runDelete } = useRequest(deleteTag, {
     manual: true,
     onSuccess() {
@@ -115,17 +127,6 @@
       curEditId.value = -1;
     }
   });
-
-  const tableRef = ref();
-  const selected = ref<ResourceTagModel[]>([]);
-  const isCreateTagDialogShow = ref(false);
-  const curBiz = ref(currentBizInfo);
-  const curEditId = ref(-1);
-  const searchValue = ref([]);
-
-  const hasSelected = computed(() => selected.value.length > 0);
-  const selectedIds = computed(() => selected.value.map(item => item.id));
-  const isBusiness = computed(() => route.name === 'BizResourceTag');
 
   const searchSelectData = [
     {
